@@ -1,311 +1,164 @@
 import streamlit as st
-import sys
-import io
-import re
-
+import sys, io, re
 from bulk_import import bulk_upload_orders
 
-st.set_page_config(page_title="ZR Sync", page_icon="✚", layout="centered")
+st.set_page_config(page_title="ZR Sync | مزامنة الطلبيات", page_icon="✚", layout="centered")
 
-# ════════════════════════════════════════════════════════════
-#  CSS — Dark Premium Pharmacy Theme
-# ════════════════════════════════════════════════════════════
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Arial:wght@400;700&display=swap');
 
-@property --angle {
-  syntax: '<angle>';
-  initial-value: 0deg;
-  inherits: false;
-}
-
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-html, body,
-[data-testid="stAppViewContainer"],
-[data-testid="stAppViewBlockContainer"],
-[data-testid="block-container"] {
-    background: #060e08 !important;
-    font-family: 'Inter', sans-serif !important;
+html, body, [data-testid="stAppViewContainer"], [data-testid="block-container"] {
+    background: #F0F7F1 !important;
     padding: 0 !important;
-    color: #e0f0e8 !important;
 }
+[data-testid="block-container"] { padding: 0 0 40px !important; max-width: 560px !important; margin: 0 auto !important; }
 [data-testid="stVerticalBlock"] { gap: 0 !important; }
-header[data-testid="stHeader"]  { background: transparent !important; }
-footer, #MainMenu                { visibility: hidden; }
-section[data-testid="stSidebar"]{ display: none; }
+header[data-testid="stHeader"] { display: none !important; }
+footer, #MainMenu { visibility: hidden; }
 
-/* ── HEADER ─────────────────────────────────────────────── */
-.zr-header {
-    background: linear-gradient(160deg, #00A651 0%, #003D20 100%);
-    padding: 32px 20px 28px;
+/* Header bar — same green as app.py */
+.header {
+    background: #00A651;
+    padding: 22px 20px;
     text-align: center;
-    border-radius: 0 0 36px 36px;
-    box-shadow: 0 12px 40px rgba(0,166,81,0.35), 0 0 0 1px rgba(0,255,136,0.1);
-    margin-bottom: 28px;
-    position: relative;
-    overflow: hidden;
-}
-.zr-header::before {
-    content: '';
-    position: absolute; inset: 0;
-    background: radial-gradient(ellipse at 50% -20%, rgba(0,255,136,0.18) 0%, transparent 65%);
-    pointer-events: none;
-}
-.zr-header .cross {
-    font-size: 1.5rem;
-    letter-spacing: 10px;
-    color: rgba(255,255,255,0.55);
-    margin-bottom: 8px;
-}
-.zr-header h1 {
-    color: #fff !important;
-    font-size: clamp(1.4rem, 6vw, 2rem);
-    font-weight: 900;
-    letter-spacing: -0.5px;
-    text-shadow: 0 2px 16px rgba(0,255,136,0.35);
-    margin-bottom: 6px;
-}
-.zr-header p { color: rgba(255,255,255,0.65); font-size: 0.88rem; font-weight: 300; }
-
-/* ── GLASS CARD ─────────────────────────────────────────── */
-.zr-card {
-    background: rgba(255,255,255,0.03);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(0,166,81,0.25);
-    border-radius: 24px;
-    padding: 28px 20px 24px;
-    text-align: center;
-    margin: 0 6px 24px;
-    box-shadow: 0 8px 40px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.07);
-}
-.zr-card .store-icon { font-size: 3.2rem; margin-bottom: 12px; filter: drop-shadow(0 0 12px rgba(0,255,136,0.5)); }
-.zr-card h2 {
-    color: #fff;
-    font-size: 1.3rem;
+    font-size: 1.25rem;
     font-weight: 800;
-    margin-bottom: 8px;
-    letter-spacing: -0.3px;
+    color: #fff;
+    letter-spacing: 1px;
 }
-.zr-card .desc { color: rgba(180,220,195,0.8); font-size: 0.84rem; line-height: 1.6; }
-.zr-card .desc b { color: #00ff88; }
 
-/* Divider */
-.divider { border: none; border-top: 1px solid rgba(0,166,81,0.2); margin: 18px 0; }
-
-/* Stats chips */
-.stats-row { display: flex; gap: 8px; justify-content: center; margin-bottom: 4px; }
-.stat-chip {
-    flex: 1;
-    background: rgba(0,166,81,0.1);
-    border: 1px solid rgba(0,166,81,0.2);
-    border-radius: 14px;
-    padding: 10px 6px;
+/* White card */
+.card {
+    background: #fff;
+    border-radius: 18px;
+    border: 1px solid #B2DFBF;
+    margin: 24px 20px 0;
+    padding: 28px 24px 24px;
+    text-align: center;
 }
-.stat-chip .label { font-size: 0.68rem; color: rgba(150,200,170,0.7); margin-bottom: 3px; }
-.stat-chip .val   { font-size: 0.95rem; font-weight: 800; color: #00ff88; }
+.card .icon  { font-size: 3.2rem; margin-bottom: 8px; }
+.card h2     { color: #1A3C2A; font-size: 1.25rem; font-weight: 800; margin: 0 0 6px; }
+.card .sub   { color: #4A7A5A; font-size: 0.88rem; margin-bottom: 0; }
+.divider     { border: none; border-top: 1px solid #D0EDD8; margin: 18px 0; }
+.status-idle { color: #4A7A5A; font-size: 0.92rem; text-align: center; }
 
-/* ── BUTTON ─────────────────────────────────────────────── */
-div.stButton { margin: 0 6px !important; }
+/* Button */
+div.stButton { margin: 0 20px !important; }
 div.stButton > button {
-    background: linear-gradient(135deg, #00A651 0%, #00CC66 50%, #00A651 100%) !important;
-    background-size: 200% 200% !important;
+    width: 100% !important;
+    background: #00A651 !important;
     color: #fff !important;
     font-size: 1.05rem !important;
     font-weight: 700 !important;
     border: none !important;
-    border-radius: 50px !important;
-    padding: 18px 0 !important;
-    width: 100% !important;
-    letter-spacing: 0.3px;
-    box-shadow:
-        0 0 0 0 rgba(0,255,136,0),
-        0 8px 30px rgba(0,166,81,0.5),
-        inset 0 1px 0 rgba(255,255,255,0.25) !important;
-    transition: all 0.3s ease !important;
-    animation: btn-breathe 3s ease-in-out infinite;
-    position: relative !important;
+    border-radius: 26px !important;
+    padding: 16px !important;
+    box-shadow: 0 4px 18px rgba(0,166,81,0.35) !important;
+    transition: background .2s !important;
 }
-@keyframes btn-breathe {
-    0%, 100% { box-shadow: 0 0 20px rgba(0,166,81,0.4), 0 8px 30px rgba(0,166,81,0.3), inset 0 1px 0 rgba(255,255,255,0.2); }
-    50%       { box-shadow: 0 0 40px rgba(0,255,136,0.6), 0 8px 40px rgba(0,166,81,0.5), inset 0 1px 0 rgba(255,255,255,0.2); }
-}
-div.stButton > button:hover {
-    transform: translateY(-2px) scale(1.01) !important;
-    box-shadow: 0 0 50px rgba(0,255,136,0.7), 0 12px 40px rgba(0,166,81,0.6) !important;
-    animation: none !important;
-}
-div.stButton > button:active { transform: translateY(0) scale(0.99) !important; }
+div.stButton > button:hover  { background: #006B3A !important; }
+div.stButton > button:active { transform: scale(0.98) !important; }
 
-/* ── PROCESSING BOX ─────────────────────────────────────── */
-.proc-wrapper {
-    position: relative;
-    border-radius: 24px;
-    padding: 3px;
-    margin: 8px 6px;
-    background: conic-gradient(from var(--angle), #003D20, #00ff88, #00A651, #00ff88, #003D20);
-    animation: spin-border 2s linear infinite;
-}
-@keyframes spin-border { to { --angle: 360deg; } }
-
-.proc-inner {
-    background: #0a1a10;
-    border-radius: 22px;
-    padding: 32px 20px;
+/* Processing spinner card */
+.proc {
+    background: #fff;
+    border-radius: 18px;
+    border: 1px solid #B2DFBF;
+    margin: 16px 20px 0;
+    padding: 32px 24px;
     text-align: center;
 }
-.proc-spinner {
+.spinner {
     width: 56px; height: 56px;
+    border: 6px solid #C8E6C9;
+    border-top: 6px solid #00A651;
     border-radius: 50%;
     margin: 0 auto 16px;
-    background: conic-gradient(from var(--angle), transparent 60%, #00ff88 100%);
-    animation: spin-border 1s linear infinite;
-    position: relative;
+    animation: spin .9s linear infinite;
 }
-.proc-spinner::after {
-    content: '';
-    position: absolute;
-    inset: 6px;
-    background: #0a1a10;
-    border-radius: 50%;
-}
-.proc-title { color: #00ff88; font-size: 1.05rem; font-weight: 700; margin-bottom: 6px; }
-.proc-sub   { color: rgba(150,200,170,0.6); font-size: 0.82rem; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.proc .cross { font-size: 1.6rem; color: #00A651; margin-bottom: 8px; }
+.proc h3 { color: #00A651; font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
+.proc p  { color: #4A7A5A; font-size: 0.82rem; }
 
-/* ── RESULT CARDS ─────────────────────────────────────────── */
-.result-card {
-    border-radius: 24px;
-    padding: 32px 20px;
+/* Result */
+.result {
+    background: #fff;
+    border-radius: 18px;
+    margin: 16px 20px 0;
+    padding: 28px 24px;
     text-align: center;
-    margin: 8px 6px 0;
-    position: relative;
-    overflow: hidden;
 }
-.result-card::before {
-    content: '';
-    position: absolute; inset: 0;
-    background: radial-gradient(ellipse at 50% 0%, rgba(0,255,136,0.15), transparent 65%);
-    pointer-events: none;
-}
-.result-card.success {
-    background: rgba(0,166,81,0.12);
-    border: 1px solid rgba(0,255,136,0.3);
-    box-shadow: 0 0 40px rgba(0,166,81,0.2);
-}
-.result-card.warning {
-    background: rgba(255,160,0,0.1);
-    border: 1px solid rgba(255,200,0,0.3);
-}
-.result-card.error {
-    background: rgba(200,30,30,0.1);
-    border: 1px solid rgba(255,80,80,0.25);
-}
-.result-icon  { font-size: 2.8rem; margin-bottom: 10px; }
-.result-title { font-size: 1.1rem; font-weight: 800; color: #fff; margin-bottom: 10px; }
-.result-count {
-    font-size: 5rem;
-    font-weight: 900;
-    color: #00ff88;
-    line-height: 1;
-    margin: 6px 0 4px;
-    text-shadow: 0 0 30px rgba(0,255,136,0.6);
-}
-.result-label { font-size: 0.85rem; color: rgba(150,200,170,0.7); }
-
-/* ── FOOTER ─────────────────────────────────────────────── */
-.zr-footer {
-    text-align: center;
-    color: rgba(100,150,120,0.4);
-    font-size: 0.72rem;
-    padding: 24px 0 36px;
-}
+.result.ok   { border: 1px solid #B2DFBF; }
+.result.warn { border: 1px solid #FCD34D; }
+.result.err  { border: 1px solid #FCA5A5; }
+.result p { font-size: 1rem; font-weight: 700; margin: 0; }
+.result p.ok-text   { color: #00A651; }
+.result p.warn-text { color: #F59E0B; }
+.result p.err-text  { color: #EF4444; }
 </style>
 """, unsafe_allow_html=True)
 
-# ── Header ───────────────────────────────────────────────────
-st.markdown("""
-<div class="zr-header">
-    <div class="cross">✚ ✚ ✚</div>
-    <h1>ZR Express Sync</h1>
-    <p>مزامنة تلقائية للطلبيات مع شركة التوصيل</p>
-</div>
-""", unsafe_allow_html=True)
+# ── Header ────────────────────────────────────────────────────
+st.markdown('<div class="header">✚&nbsp;&nbsp;ZR Express Sync&nbsp;&nbsp;✚</div>', unsafe_allow_html=True)
 
-# ── Card ─────────────────────────────────────────────────────
+# ── Card ──────────────────────────────────────────────────────
 st.markdown("""
-<div class="zr-card">
-    <div class="store-icon">🏪</div>
+<div class="card">
+    <div class="icon">🏪</div>
     <h2>Branded Store Orders</h2>
-    <p class="desc">يجلب الطلبيات بحالة <b>Confirmer</b> ويرفعها تلقائياً<br>مع تحديث <b>UUID · Tracking · Delivery · Return</b></p>
+    <p class="sub">مزامنة الطلبيات التلقائية مع شركة ZR Express</p>
     <hr class="divider">
-    <div class="stats-row">
-        <div class="stat-chip"><div class="label">تبحث عن</div><div class="val">Confirmer</div></div>
-        <div class="stat-chip"><div class="label">تحوّل إلى</div><div class="val">Action</div></div>
-        <div class="stat-chip"><div class="label">المنصة</div><div class="val">ZR ✚</div></div>
-    </div>
+    <p class="status-idle">النظام جاهز  •  اضغط لبدء المزامنة</p>
 </div>
 """, unsafe_allow_html=True)
 
-# ── Button & Logic ───────────────────────────────────────────
+st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
+
+# ── Button & Logic ────────────────────────────────────────────
 result_area = st.empty()
 
 if st.button("🚀   Upload Orders"):
     result_area.markdown("""
-<div class="proc-wrapper">
-    <div class="proc-inner">
-        <div class="proc-spinner"></div>
-        <div class="proc-title">⏳ جاري معالجة الطلبيات...</div>
-        <div class="proc-sub">يرجى الانتظار، قد تستغرق العملية بضع دقائق</div>
-    </div>
+<div class="proc">
+    <div class="spinner"></div>
+    <div class="cross">✚</div>
+    <h3>⏳ جاري معالجة الطلبيات...</h3>
+    <p>يرجى الانتظار</p>
 </div>
 """, unsafe_allow_html=True)
 
-    output_buf = io.StringIO()
-    old_stdout = sys.stdout
-    sys.stdout = output_buf
+    buf = io.StringIO()
+    sys.stdout = buf
     try:
         bulk_upload_orders("Branded Store Orders", "Orders")
     except Exception as e:
-        print(f"ERROR:{e}")
+        print(f"Error: {e}")
     finally:
-        sys.stdout = old_stdout
+        sys.stdout = sys.__stdout__
 
-    output = output_buf.getvalue()
-    match_success = re.search(r'\((\d+)\s*نجاح', output)
+    out = buf.getvalue()
+    m = re.search(r'\((\d+)\s*نجاح', out)
 
-    if match_success:
-        count = int(match_success.group(1))
-        if count > 0:
-            result_area.markdown(f"""
-<div class="result-card success">
-    <div class="result-icon">✅</div>
-    <div class="result-title">تمت العملية بنجاح!</div>
-    <div class="result-count">{count}</div>
-    <div class="result-label">طلبية تم رفعها وتحديث الشيت بالكامل</div>
+    if m and int(m.group(1)) > 0:
+        n = int(m.group(1))
+        result_area.markdown(f"""
+<div class="result ok">
+    <p class="ok-text">✅ اكتملت المزامنة!  تم رفع {n} طلبيات بنجاح</p>
 </div>""", unsafe_allow_html=True)
-        else:
-            result_area.markdown("""
-<div class="result-card warning">
-    <div class="result-icon">⚠️</div>
-    <div class="result-title">لم يُرفع أي طلبية</div>
-    <div class="result-label">تحقق من وجود طلبيات بحالة Confirmer</div>
-</div>""", unsafe_allow_html=True)
-    elif "لا توجد طلبيات جديدة" in output:
+    elif "لا توجد طلبيات جديدة" in out:
         result_area.markdown("""
-<div class="result-card success">
-    <div class="result-icon">✅</div>
-    <div class="result-title">الشيت محدث بالكامل</div>
-    <div class="result-label">لا توجد طلبيات جديدة للرفع</div>
+<div class="result ok">
+    <p class="ok-text">✅ الشيت محدث  •  لا توجد طلبيات جديدة</p>
+</div>""", unsafe_allow_html=True)
+    elif m:
+        result_area.markdown("""
+<div class="result warn">
+    <p class="warn-text">⚠️ لم يُرفع أي طلبية. راجع الشيت.</p>
 </div>""", unsafe_allow_html=True)
     else:
         result_area.markdown("""
-<div class="result-card error">
-    <div class="result-icon">❌</div>
-    <div class="result-title">حدث خطأ</div>
-    <div class="result-label">تحقق من اتصال الإنترنت أو إعدادات الشيت</div>
+<div class="result err">
+    <p class="err-text">❌ حدث خطأ. تحقق من الإنترنت أو إعدادات الشيت.</p>
 </div>""", unsafe_allow_html=True)
-
-# ── Footer ───────────────────────────────────────────────────
-st.markdown('<div class="zr-footer">ZR Express Sync © 2026 — Branded Store</div>', unsafe_allow_html=True)
-
