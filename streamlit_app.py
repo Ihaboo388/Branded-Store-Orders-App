@@ -98,7 +98,7 @@ div.stButton > button:active {
     border-radius: 14px;
     padding: 24px 20px;
     text-align: center;
-    margin: 0 16px;
+    margin: 12px 16px 0;
     animation: fadeIn 0.4s ease;
 }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
