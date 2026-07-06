@@ -16,6 +16,7 @@ html, body, [data-testid="stAppViewContainer"], [data-testid="block-container"] 
 [data-testid="stVerticalBlock"] { gap: 0 !important; }
 header[data-testid="stHeader"] { display: none !important; }
 footer, #MainMenu { visibility: hidden; }
+[data-testid="stDecoration"] { display: none !important; }
 
 /* Header bar — same green as app.py */
 .header {
@@ -44,7 +45,7 @@ footer, #MainMenu { visibility: hidden; }
 .status-idle { color: #4A7A5A; font-size: 0.92rem; text-align: center; }
 
 /* Button */
-div.stButton { margin: 0 20px !important; }
+div.stButton { margin: 16px 20px 0 !important; }
 div.stButton > button {
     width: 100% !important;
     background: #00A651 !important;
@@ -114,7 +115,7 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
+st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
 
 # ── Button & Logic ────────────────────────────────────────────
 result_area = st.empty()
