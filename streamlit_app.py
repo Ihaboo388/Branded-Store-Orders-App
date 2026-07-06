@@ -14,17 +14,15 @@ header[data-testid="stHeader"], footer, #MainMenu,
 [data-testid="stDecoration"], [data-testid="stToolbar"],
 [data-testid="stStatusWidget"] { display: none !important; }
 
-html, body {
-    background-color: #F0F7F1 !important;
-    height: 100% !important;
-    overflow: hidden !important;
-    margin: 0 !important; padding: 0 !important;
-}
+html, body { height: 100vh !important; overflow: hidden !important; margin: 0 !important; padding: 0 !important; }
 
-[data-testid="stApp"], [data-testid="stAppViewContainer"] {
-    background-color: #F0F7F1 !important;
+[data-testid="stApp"],
+[data-testid="stAppViewContainer"],
+[data-testid="stMain"],
+[data-testid="stMainBlockContainer"] {
     height: 100vh !important;
     overflow: hidden !important;
+    background-color: #F0F7F1 !important;
 }
 
 [data-testid="block-container"] {
@@ -32,21 +30,25 @@ html, body {
     padding: 0 !important;
     max-width: 520px !important;
     margin: 0 auto !important;
+    overflow: hidden !important;
+    background-color: #F0F7F1 !important;
+}
+
+/* Chain height through the anonymous wrapper div Streamlit inserts */
+[data-testid="block-container"] > div {
+    height: 100% !important;
     display: flex !important;
     flex-direction: column !important;
 }
 
-[data-testid="stVerticalBlock"] {
+/* Target ONLY the top-level vertical block — apply space-between */
+[data-testid="block-container"] > div > [data-testid="stVerticalBlock"] {
     flex: 1 !important;
     display: flex !important;
     flex-direction: column !important;
     justify-content: space-between !important;
-    padding: 0 !important;
-    gap: 0 !important;
+    min-height: 0 !important;
 }
-
-/* Hide empty result placeholder gap */
-[data-testid="stVerticalBlock"] > div:empty { display: none !important; }
 
 /* Header bar */
 .header-bar {
