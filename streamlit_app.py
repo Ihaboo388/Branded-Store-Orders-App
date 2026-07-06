@@ -60,10 +60,10 @@ html, body { height: 100vh !important; overflow: hidden !important; margin: 0 !i
 /* Button - centered inside middle column */
 div.stButton > button {
     background-color: #00A651 !important;
-    color: #F0F7F1 !important;
+    color: #FFFFFF !important;
     font-family: 'Cairo', sans-serif !important;
-    font-size: 1.2rem !important;
-    font-weight: 800 !important;
+    font-size: 1.3rem !important;
+    font-weight: 900 !important;
     padding: 14px 24px !important;
     border: none !important;
     border-radius: 5px !important;
