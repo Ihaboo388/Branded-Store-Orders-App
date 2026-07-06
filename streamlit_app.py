@@ -73,6 +73,14 @@ div.stButton > button {
     cursor: pointer !important;
     letter-spacing: 0.5px !important;
 }
+div.stButton > button p,
+div.stButton > button span,
+div.stButton > button div {
+    color: #FFFFFF !important;
+    font-size: 1.3rem !important;
+    font-weight: 900 !important;
+    font-family: 'Cairo', sans-serif !important;
+}
 div.stButton > button:hover {
     background-color: #006B3A !important;
     box-shadow: 0 8px 26px rgba(0,166,81,0.5) !important;
