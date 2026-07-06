@@ -17,6 +17,7 @@ header[data-testid="stHeader"], footer, #MainMenu,
 html, body, [data-testid="stAppViewContainer"] {
     background-color: #F0F7F1 !important;
     padding: 0 !important; margin: 0 !important;
+    overflow: hidden !important;
 }
 
 [data-testid="block-container"] {
@@ -69,10 +70,10 @@ div.stButton > button {
     font-weight: 700 !important;
     padding: 14px 48px !important;
     border: none !important;
-    border-radius: 30px !important;
+    border-radius: 5px !important;
     min-width: 220px !important;
     width: auto !important;
-    box-shadow: 0 6px 20px rgba(0,166,81,0.4) !important;
+    box-shadow: 0 4px 12px rgba(0,166,81,0.35) !important;
     transition: all 0.25s ease !important;
     cursor: pointer !important;
     letter-spacing: 0.5px !important;
