@@ -1,0 +1,25 @@
+# Sensitive files - DO NOT COMMIT
+credentials.json
+config.py
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+
+# Temp files
+*.xlsx
+zr_debug_log.txt
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# VSCode
+.vscode/
