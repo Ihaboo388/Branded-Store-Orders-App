@@ -40,7 +40,7 @@ html, body {
     flex: 1 !important;
     display: flex !important;
     flex-direction: column !important;
-    justify-content: space-evenly !important;
+    justify-content: space-between !important;
     padding: 0 !important;
     gap: 0 !important;
 }
