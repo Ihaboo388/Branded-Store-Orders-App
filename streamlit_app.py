@@ -75,7 +75,9 @@ div.stButton > button {
 }
 div.stButton > button p,
 div.stButton > button span,
-div.stButton > button div {
+div.stButton > button div,
+div.stButton > button [data-testid="stMarkdownContainer"],
+div.stButton > button [data-testid="stMarkdownContainer"] p {
     color: #FFFFFF !important;
     font-size: 1.3rem !important;
     font-weight: 900 !important;
