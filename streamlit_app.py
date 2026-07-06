@@ -14,17 +14,39 @@ header[data-testid="stHeader"], footer, #MainMenu,
 [data-testid="stDecoration"], [data-testid="stToolbar"],
 [data-testid="stStatusWidget"] { display: none !important; }
 
-html, body, [data-testid="stAppViewContainer"] {
+html, body {
     background-color: #F0F7F1 !important;
-    padding: 0 !important; margin: 0 !important;
+    height: 100% !important;
+    overflow: hidden !important;
+    margin: 0 !important; padding: 0 !important;
+}
+
+[data-testid="stApp"], [data-testid="stAppViewContainer"] {
+    background-color: #F0F7F1 !important;
+    height: 100vh !important;
     overflow: hidden !important;
 }
 
 [data-testid="block-container"] {
-    padding: 0 0 40px 0 !important;
+    height: 100vh !important;
+    padding: 0 !important;
     max-width: 520px !important;
     margin: 0 auto !important;
+    display: flex !important;
+    flex-direction: column !important;
 }
+
+[data-testid="stVerticalBlock"] {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-evenly !important;
+    padding: 0 !important;
+    gap: 0 !important;
+}
+
+/* Hide empty result placeholder gap */
+[data-testid="stVerticalBlock"] > div:empty { display: none !important; }
 
 /* Header bar */
 .header-bar {
@@ -35,7 +57,6 @@ html, body, [data-testid="stAppViewContainer"] {
     font-size: 1.25rem;
     font-weight: 900;
     letter-spacing: 1px;
-    margin-bottom: 20px;
 }
 
 /* Main card */
@@ -43,7 +64,7 @@ html, body, [data-testid="stAppViewContainer"] {
     background: #FFFFFF;
     border-radius: 18px;
     border: 1px solid #B2DFBF;
-    padding: 28px 24px 28px;
+    padding: 28px 24px;
     margin: 0 16px;
     text-align: center;
     box-shadow: 0 4px 20px rgba(0,166,81,0.08);
@@ -55,24 +76,17 @@ html, body, [data-testid="stAppViewContainer"] {
 .divider     { height: 1px; background: #D0EDD8; margin: 18px 8px; }
 .status-text { color: #4A7A5A; font-size: 0.9rem; font-weight: 600; margin: 0; }
 
-/* Center the button */
-div.stButton {
-    display: flex !important;
-    justify-content: center !important;
-    margin-top: 20px !important;
-    padding: 0 16px !important;
-}
+/* Button - centered inside middle column */
 div.stButton > button {
     background-color: #00A651 !important;
     color: #FFFFFF !important;
     font-family: 'Cairo', sans-serif !important;
     font-size: 1.05rem !important;
     font-weight: 700 !important;
-    padding: 14px 48px !important;
+    padding: 14px 24px !important;
     border: none !important;
     border-radius: 5px !important;
-    min-width: 220px !important;
-    width: auto !important;
+    width: 100% !important;
     box-shadow: 0 4px 12px rgba(0,166,81,0.35) !important;
     transition: all 0.25s ease !important;
     cursor: pointer !important;
@@ -88,12 +102,21 @@ div.stButton > button:active {
     box-shadow: 0 3px 10px rgba(0,166,81,0.3) !important;
 }
 
+/* Remove column gap around button */
+[data-testid="stHorizontalBlock"] {
+    gap: 0 !important;
+    padding: 0 16px !important;
+}
+[data-testid="stColumn"]:first-child,
+[data-testid="stColumn"]:last-child { padding: 0 !important; }
+[data-testid="stColumn"] { padding: 0 8px !important; }
+
 /* Feedback cards */
 .fb-card {
     border-radius: 14px;
     padding: 24px 20px;
     text-align: center;
-    margin: 16px 16px 0;
+    margin: 0 16px;
     animation: fadeIn 0.4s ease;
 }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -132,7 +155,11 @@ st.markdown("""
 
 result_area = st.empty()
 
-if st.button("🚀   Upload Orders"):
+_, col_btn, _ = st.columns([1, 2, 1])
+with col_btn:
+    clicked = st.button("🚀   Upload Orders", use_container_width=True)
+
+if clicked:
     result_area.markdown("""
     <div class="fb-card fb-loader">
         <div class="spinner"></div>
