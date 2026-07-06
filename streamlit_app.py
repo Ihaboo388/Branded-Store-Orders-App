@@ -14,40 +14,19 @@ header[data-testid="stHeader"], footer, #MainMenu,
 [data-testid="stDecoration"], [data-testid="stToolbar"],
 [data-testid="stStatusWidget"] { display: none !important; }
 
-html, body { height: 100vh !important; overflow: hidden !important; margin: 0 !important; padding: 0 !important; }
+html, body { height: 100vh !important; overflow: hidden !important; margin: 0 !important; padding: 0 !important; background-color: #F0F7F1 !important; }
 
 [data-testid="stApp"],
 [data-testid="stAppViewContainer"],
 [data-testid="stMain"],
-[data-testid="stMainBlockContainer"] {
+[data-testid="stMainBlockContainer"],
+[data-testid="block-container"] {
     height: 100vh !important;
     overflow: hidden !important;
     background-color: #F0F7F1 !important;
-}
-
-[data-testid="block-container"] {
-    height: 100vh !important;
     padding: 0 !important;
     max-width: 520px !important;
     margin: 0 auto !important;
-    overflow: hidden !important;
-    background-color: #F0F7F1 !important;
-}
-
-/* Chain height through the anonymous wrapper div Streamlit inserts */
-[data-testid="block-container"] > div {
-    height: 100% !important;
-    display: flex !important;
-    flex-direction: column !important;
-}
-
-/* Target ONLY the top-level vertical block — apply space-between */
-[data-testid="block-container"] > div > [data-testid="stVerticalBlock"] {
-    flex: 1 !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: space-between !important;
-    min-height: 0 !important;
 }
 
 /* Header bar */
@@ -67,7 +46,7 @@ html, body { height: 100vh !important; overflow: hidden !important; margin: 0 !i
     border-radius: 18px;
     border: 1px solid #B2DFBF;
     padding: 28px 24px;
-    margin: 0 16px;
+    margin: 8vh 16px 0;
     text-align: center;
     box-shadow: 0 4px 20px rgba(0,166,81,0.08);
 }
@@ -108,6 +87,7 @@ div.stButton > button:active {
 [data-testid="stHorizontalBlock"] {
     gap: 0 !important;
     padding: 0 16px !important;
+    margin-top: 8vh !important;
 }
 [data-testid="stColumn"]:first-child,
 [data-testid="stColumn"]:last-child { padding: 0 !important; }
