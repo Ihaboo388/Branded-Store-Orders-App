@@ -12,8 +12,9 @@ html, body, [data-testid="stAppViewContainer"], [data-testid="block-container"] 
     background-color: #F8FAFC !important;
     font-family: 'Plus Jakarta Sans', sans-serif !important;
 }
-[data-testid="block-container"] { padding: 2.5rem 1.2rem 4rem !important; max-width: 480px !important; margin: 0 auto !important; }
-header[data-testid="stHeader"], footer, #MainMenu, [data-testid="stDecoration"] { display: none !important; }
+[data-testid="stAppViewContainer"] { padding-top: 0 !important; }
+[data-testid="block-container"] { padding: 1rem 1.2rem 3rem !important; max-width: 480px !important; margin: 0 auto !important; }
+header[data-testid="stHeader"], footer, #MainMenu, [data-testid="stDecoration"], [data-testid="stToolbar"] { display: none !important; }
 
 .app-card {
     background: #FFFFFF; border-radius: 28px; padding: 40px 24px;
@@ -35,12 +36,13 @@ header[data-testid="stHeader"], footer, #MainMenu, [data-testid="stDecoration"] 
 .badge .dot { width: 8px; height: 8px; background: #10B981; border-radius: 50%; box-shadow: 0 0 0 3px #D1FAE5; animation: pulse 2s infinite; }
 @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(16,185,129,0.4); } 70% { box-shadow: 0 0 0 6px rgba(16,185,129,0); } 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); } }
 
-div.stButton { margin-top: 8px !important; }
+div.stButton { margin-top: 20px !important; }
 div.stButton > button {
     width: 100% !important; background: linear-gradient(135deg, #10B981 0%, #059669 100%) !important;
     color: #FFFFFF !important; font-size: 1.1rem !important; font-weight: 700 !important;
-    padding: 20px !important; border: none !important; border-radius: 20px !important;
+    padding: 18px 20px !important; border: none !important; border-radius: 20px !important;
     box-shadow: 0 12px 24px -8px rgba(16, 185, 129, 0.5) !important; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    display: block !important; text-align: center !important;
 }
 div.stButton > button:hover { transform: translateY(-3px) !important; box-shadow: 0 16px 32px -8px rgba(16, 185, 129, 0.6) !important; }
 div.stButton > button:active { transform: translateY(0) !important; box-shadow: 0 4px 12px -4px rgba(16, 185, 129, 0.5) !important; }
