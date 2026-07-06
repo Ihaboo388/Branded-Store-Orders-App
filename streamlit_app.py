@@ -130,6 +130,36 @@ div.stButton > button:active { transform: translateY(0); }
 .banner.warning { background:#FFFDE7; color:#E65100; border:1.5px solid #FFD54F; }
 .banner.error   { background:#FFEBEE; color:#B71C1C; border:1.5px solid #EF9A9A; }
 
+/* ── PROCESSING BOX ── */
+.processing-box {
+    background: #fff;
+    border: 1.5px solid #B2DFBF;
+    border-radius: 20px;
+    padding: 36px 20px;
+    text-align: center;
+    margin: 16px 4px;
+    box-shadow: 0 4px 20px rgba(0,166,81,0.1);
+}
+.proc-text { color: #00A651; font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; }
+.proc-sub  { color: #4A7A5A; font-size: 0.85rem; }
+
+/* ── RESULT CARDS ── */
+.result-card {
+    border-radius: 20px;
+    padding: 32px 20px;
+    text-align: center;
+    margin: 16px 4px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+}
+.result-card.success { background: #F0FFF4; border: 1.5px solid #81C784; }
+.result-card.warning { background: #FFFDE7; border: 1.5px solid #FFD54F; }
+.result-card.info    { background: #E8F5E9; border: 1.5px solid #A5D6A7; }
+.result-card.error   { background: #FFEBEE; border: 1.5px solid #EF9A9A; }
+.result-icon  { font-size: 2.8rem; margin-bottom: 10px; }
+.result-title { font-size: 1.15rem; font-weight: 800; color: #1A3C2A; margin-bottom: 8px; }
+.result-count { font-size: 3.5rem; font-weight: 900; color: #00A651; line-height: 1; margin: 6px 0; }
+.result-label { font-size: 0.88rem; color: #4A7A5A; }
+
 /* ── LOG BOX ── */
 .log-section { margin: 20px 4px 0; }
 .log-title { color: #1A3C2A; font-weight: 700; font-size: 0.9rem; margin-bottom: 8px; }
@@ -193,56 +223,64 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ── Button ───────────────────────────────────────────────────
+# ── Button & Logic ───────────────────────────────────────────
 if st.button("🚀   Upload Orders"):
     output_buf = io.StringIO()
     old_stdout = sys.stdout
     sys.stdout = output_buf
 
-    with st.spinner("⏳ جاري معالجة الطلبيات... يرجى الانتظار"):
-        try:
-            bulk_upload_orders("Branded Store Orders", "Orders")
-        except Exception as e:
-            print(f"[❌] خطأ غير متوقع: {e}")
-        finally:
-            sys.stdout = old_stdout
+    status_box = st.empty()
+    status_box.markdown("""
+<div class="processing-box">
+    <div class="pulse-ring"></div>
+    <div class="proc-text">⏳ جاري معالجة الطلبيات...</div>
+    <div class="proc-sub">يرجى الانتظار، قد تستغرق العملية بضع دقائق</div>
+</div>
+""", unsafe_allow_html=True)
+
+    try:
+        bulk_upload_orders("Branded Store Orders", "Orders")
+    except Exception as e:
+        print(f"ERROR:{e}")
+    finally:
+        sys.stdout = old_stdout
 
     output = output_buf.getvalue()
+    status_box.empty()
 
-    # ── Banner ───────────────────────────────────────────────
+    # ── Result ───────────────────────────────────────────────
     match_success = re.search(r'\((\d+)\s*نجاح', output)
     if match_success:
         count = int(match_success.group(1))
         if count > 0:
-            st.markdown(
-                f'<div class="banner success">✅ اكتملت المزامنة بنجاح!<br>تم رفع <b>{count}</b> طلبيات وتحديث الشيت.</div>',
-                unsafe_allow_html=True
-            )
+            st.markdown(f"""
+<div class="result-card success">
+    <div class="result-icon">✅</div>
+    <div class="result-title">تمت العملية بنجاح!</div>
+    <div class="result-count">{count}</div>
+    <div class="result-label">طلبية تم رفعها وتحديث الشيت</div>
+</div>""", unsafe_allow_html=True)
         else:
-            st.markdown(
-                '<div class="banner warning">⚠️ لم يُرفع أي طلبية — تحقق من الشيت.</div>',
-                unsafe_allow_html=True
-            )
+            st.markdown("""
+<div class="result-card warning">
+    <div class="result-icon">⚠️</div>
+    <div class="result-title">لم يُرفع أي طلبية</div>
+    <div class="result-label">تحقق من الشيت وتأكد من وجود طلبيات بحالة Confirmer</div>
+</div>""", unsafe_allow_html=True)
     elif "لا توجد طلبيات جديدة" in output:
-        st.markdown(
-            '<div class="banner success">✅ الشيت محدث بالكامل<br>لا توجد طلبيات جديدة.</div>',
-            unsafe_allow_html=True
-        )
-    elif output.strip():
-        st.markdown(
-            '<div class="banner error">❌ حدث خطأ — راجع السجل أدناه.</div>',
-            unsafe_allow_html=True
-        )
-
-    # ── Log ──────────────────────────────────────────────────
-    if output.strip():
-        safe_output = output.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
-        st.markdown(f"""
-<div class="log-section">
-    <div class="log-title">📋 سجل العمليات</div>
-    <div class="log-box">{safe_output}</div>
-</div>
-""", unsafe_allow_html=True)
+        st.markdown("""
+<div class="result-card info">
+    <div class="result-icon">✅</div>
+    <div class="result-title">الشيت محدث بالكامل</div>
+    <div class="result-label">لا توجد طلبيات جديدة للرفع</div>
+</div>""", unsafe_allow_html=True)
+    else:
+        st.markdown("""
+<div class="result-card error">
+    <div class="result-icon">❌</div>
+    <div class="result-title">حدث خطأ</div>
+    <div class="result-label">تحقق من اتصال الإنترنت أو إعدادات الشيت</div>
+</div>""", unsafe_allow_html=True)
 
 # ── Footer ───────────────────────────────────────────────────
 st.markdown('<div class="zr-footer">ZR Express Sync © 2026 — Branded Store</div>', unsafe_allow_html=True)
